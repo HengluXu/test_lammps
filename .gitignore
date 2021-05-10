@@ -1,0 +1,4 @@
+# result files
+log.*
+*.lammpstrj
+*.dat
