@@ -1,0 +1,63 @@
+#### GENERAL SETTINGS ####
+log             log.lammps # append
+units           real				# units: 1A, 1fs, kcal, K
+boundary        p p p
+box             tilt large
+
+#### ATOM SETTINGS ####
+atom_style      full
+pair_style      lj/cut 12.50
+pair_modify     tail yes mix arithmetic
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+
+#### LOAD STRUCTURES ####
+read_data       data.MFI
+replicate       1 1 1
+
+#### ATOM GROUPINGS ####
+group           CH4    type    3
+group           fram   type    1:2
+
+#### VARIABLE SETTINGS ####
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000 # 1 ns=1e6 fs
+variable        rsd     equal 1234567
+
+variable        stemp   equal 298.00
+variable        tdamp   equal 100*${dt}
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal ${dt}*1000
+
+variable        nmol    equal 16
+
+#### COMPUTE SETTINGS ####
+compute         CH4Temp CH4 temp
+compute         CH4ke CH4 ke
+compute         framTemp fram temp
+thermo_style    custom atoms step temp c_CH4Temp c_framTemp ke c_CH4ke etotal press vol
+neigh_modify    exclude group CH4 CH4
+
+#### SIMULATION SETTINGS ####
+## INSERT CH4 ##
+molecule        CH4 CH4.molecule
+fix             1 CH4 rigid/small molecule langevin ${stemp} ${stemp} ${tdamp} ${rsd} mol CH4
+fix             2 CH4 langevin 0.00 0.00 ${tdamp} ${rsd}
+fix             3 CH4 nve
+region          cell block 0 EDGE 0 EDGE 0 EDGE units lattice
+fix             4 CH4 deposit ${nmol} 0 ${tpr} ${rsd} region cell near 2.00 mol CH4 rigid 1
+thermo          ${tpr}
+variable 		tmp equal floor(${tpr}*${nmol}*5)
+run             ${tmp}
+unfix           1
+unfix           2
+unfix           3
+unfix           4
+
+## EQUILIBRIUM ##
+reset_timestep  0
+fix             eqCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp}
+dump            eqtrj all custom ${tpr} dump.lammpstrj id type x y z
+run             ${teq}
+write_data		data.MFI_CH4
