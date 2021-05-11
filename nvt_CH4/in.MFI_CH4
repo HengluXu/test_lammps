@@ -31,41 +31,37 @@ variable        tdc     equal ${tns}*10
 variable        tpr     equal ${dt}*1000
 
 #### COMPUTE SETTINGS ####
+## PART 1 ##
+compute         allTemp all temp
 compute         CH4Temp CH4 temp
-compute         CH4ke CH4 ke
 compute         framTemp fram temp
-thermo_style    custom atoms step temp c_CH4Temp c_framTemp ke c_CH4ke etotal press vol
-
-neigh_modify    exclude group CH4 CH4
-
-compute         allTemp all temp	# compute temp of all
-compute         CH4Temp CH4 temp	# compute temp of CH4
-compute         framTemp fram temp  # compute temp of framework
-# compute         allke all ke        # compute ke of CH4
-compute         CH4ke CH4 ke        # compute ke of CH4
-# compute         framke fram ke      # compute ke of framework
-# variable        Vcm equal vcm(all,x)+vcm(all,y)+vcm(all,z)
-# variable        Vcm equal vcm(CH4,x)+vcm(CH4,y)+vcm(CH4,z)
-
+compute         CH4ke CH4 ke
 # compute_modify  allTemp extra/dof 0 dynamic/dof yes
-# compute_modify  CH4Temp dynamic/dof yes
 # compute_modify  CH4Temp extra/dof 0 dynamic/dof yes
-# compute_modify  framTemp extra/dof 0
-# compute_modify  allke extra/dof  0
+# compute_modify  framTemp extra/dof 0 dynamic/dof yes
 # compute_modify  CH4ke extra/dof  0 dynamic/dof yes
-# compute_modify  framke extra/dof  0
 
-thermo_style    custom atoms step c_allTemp c_CH4Temp c_CH4ke c_framTemp #c_framTemp #ke c_CH4ke c_framke v_Vcm
-#etotal pe press	vol# print thermo info
-#### END SETTINGS ####
+## PART 2 ##
+variable        CH4Xcm equal xcm(CH4,x)+xcm(CH4,y)+xcm(CH4,z)
+variable        CH4Vcm equal vcm(CH4,x)+vcm(CH4,y)+vcm(CH4,z)
+thermo_style    custom atoms step temp c_allTemp c_CH4Temp c_framTemp ke c_CH4ke v_CH4Vcm v_CH4Xcm # pe etotal press vol
 
 #### SIMULATION SETTINGS ####
 ## EQUILIBRIUM ##
+reset_timestep  0
+fix             eqCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp}
+neigh_modify    exclude group CH4 CH4
+thermo          ${tpr}
+run             ${teq}
+
 ## DATA COLLECTION ##
 reset_timestep  0
 fix             dcCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp}
+neigh_modify    exclude group CH4 CH4
 thermo          ${tpr}
 # dump            alltrj all custom ${tpr} dump.lammpstrj id type x y z
 dump            CH4trj CH4 custom ${tpr} CH4_coords.dat id type xs ys zs ix iy iz
 dump            CH4velo CH4 custom ${tpr} CH4_velocities.dat id type vx vy vz fx fy fz
 run             ${tdc}
+
+## END ##

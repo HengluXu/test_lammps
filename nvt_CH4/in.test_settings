@@ -1,0 +1,30 @@
+## test
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+compute         allTemp all temp
+compute         CH4Temp CH4 temp
+compute         framTemp fram temp
+compute         CH4ke CH4 ke
+# compute_modify  allTemp extra/dof 0 dynamic/dof yes
+# compute_modify  CH4Temp extra/dof 0 dynamic/dof yes
+# compute_modify  framTemp extra/dof 0 dynamic/dof yes
+# compute_modify  CH4ke extra/dof  0 dynamic/dof yes
