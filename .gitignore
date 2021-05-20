@@ -4,6 +4,7 @@ log.*
 *.dat
 *.pdf
 *.txt
+*.png
 
 test_*
 calc_*
