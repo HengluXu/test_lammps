@@ -2,3 +2,8 @@
 log.*
 *.lammpstrj
 *.dat
+*.pdf
+*.txt
+
+test_*
+calc_*
