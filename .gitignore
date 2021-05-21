@@ -6,5 +6,7 @@ log.*
 *.txt
 *.png
 
+# tmp dirs
 test_*
 calc_*
+old_*

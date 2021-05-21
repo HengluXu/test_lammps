@@ -1,52 +1,41 @@
 # test lammps
 
 ## to-do
-* nvt_CH4 submit calcs
-* improve plot_Ek_dis.py
+* print degree of freedom (DOF)
+* print degree of freedom (DOF)_constrained
 
 ## lammps branch
-Modified lammps [repo link](https://github.com/HengluXu/lammps.git)
+Modified lammps source code [(repo link)](https://github.com/HengluXu/lammps.git)
 ``` bash
-git branch name
+git branch -a
     master
-    master_print
-        # print different `dof`
-        dof_print   #  --> for testing dof
+    master_print    # print different `dof`
+    dof_print       #  --> for testing dof
         # change `dof=3N`
         # print different `dof`
-        dof_pull    # --> for use
+    dof_pull        # --> for use
         # change `dof=3N`
-/path_to/lammps/src/lmp_${branch_name} -in in.*
+mpirun -np 4 /path_to/lammps/src/lmp_${branch_name} -in in.*
 ```
 
-## lammps command
-```
-compute_modify compute-ID extra/dof N dynamic/dof yes
-```
-Since `extra/dof` is applied to compute-ID, it should not affect the inner integration of particles, but only work on the outputs of thermodynamcal properties.
+### testing of lammps commands
+`compute_modify compute-ID extra/dof N dynamic/dof yes`
+* Since `extra/dof` is applied to compute-ID, it should not affect the inner integration of particles, but only work on the outputs of thermodynamical properties.
 
-## simulations
-* ./insert_CH4
-* ./nvt_CH4
+## MD tests
+In each test directory, three `bash` scripts to execute
 ```bash
 ./run.sh
 ./process.sh
 ./clean.sh
 ```
 
-## post-processing scripts
-```bash
-./convert_temp2Ek.py 16 298     # input: np, temperature
-./plot_Ek_dis.py
-```
-
-## result analysis
-The relationship between the following properties.
-* Ek(tot)
-* Ek(tot)_print
-* temperature-target
-* temperature-current
-* temperature_print
-* degree of freedom (DOF)
-* degree of freedom (DOF)_constrained
-* ?? compute_modify is working on ??
+* ./nvt_CH4
+    * data.MFI_CH4
+    * in.MFI_CH4
+* ./insert_CH4
+    * inserting CH4 into frameworks, preparation for NVT simulation.
+* post-processing scripts
+    * ./convert_temp2Ek.py NP temperature
+    * ./plot_Ek_dis.py NP temperature
+    * ./compute_log_thermo.py NP temperature

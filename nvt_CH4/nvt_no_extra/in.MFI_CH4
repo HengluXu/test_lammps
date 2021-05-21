@@ -55,9 +55,6 @@ run             ${teq}
 
 ## DATA COLLECTION ##
 reset_timestep  0
-fix             dcCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp}
-neigh_modify    exclude group CH4 CH4
-thermo          ${tpr}
 # dump            alltrj all custom ${tpr} dump.lammpstrj id type x y z
 # dump            CH4trj CH4 custom ${tpr} CH4_coords.dat id type x y z
 dump            CH4velo CH4 custom ${tpr} CH4_velocities.dat id type vx vy vz fx fy fz
