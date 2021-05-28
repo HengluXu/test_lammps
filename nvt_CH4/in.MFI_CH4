@@ -43,7 +43,7 @@ variable        tpr     equal ${dt}*1
 ## PART 2 ##
 variable        CH4Xcm equal xcm(CH4,x)+xcm(CH4,y)+xcm(CH4,z)
 variable        CH4Vcm equal vcm(CH4,x)+vcm(CH4,y)+vcm(CH4,z)
-# thermo_style    custom atoms step temp c_allTemp c_CH4Temp c_framTemp ke c_CH4ke v_CH4Vcm v_CH4Xcm # pe etotal press vol
+thermo_style    custom atoms step temp #c_allTemp c_CH4Temp c_framTemp ke c_CH4ke v_CH4Vcm v_CH4Xcm # pe etotal press vol
 
 #### SIMULATION SETTINGS ####
 ## EQUILIBRIUM ##

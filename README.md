@@ -35,6 +35,8 @@ In each test directory, three `bash` scripts to execute
     * in.MFI_CH4
 * ./insert_CH4
     * inserting CH4 into frameworks, preparation for NVT simulation.
+* mail_lists
+    * records of lammps mail lists
 * post-processing scripts
     * ./convert_temp2Ek.py NP temperature
     * ./plot_Ek_dis.py NP temperature
