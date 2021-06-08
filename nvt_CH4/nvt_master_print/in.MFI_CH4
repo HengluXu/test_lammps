@@ -25,9 +25,9 @@ variable        tns     equal ${dt}*1000000 # 1 ns=1e6 fs
 
 variable        stemp   equal 298.00
 variable        tdamp   equal 100*${dt}
-variable        teq     equal 10000
-variable        tdc     equal 100000
-variable        tpr     equal ${dt}*1
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal ${dt}*1000
 
 #### COMPUTE SETTINGS ####
 ## PART 1 ##

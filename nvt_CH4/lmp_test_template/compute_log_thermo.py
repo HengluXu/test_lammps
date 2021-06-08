@@ -8,7 +8,7 @@ import numpy as np
 NP=int(sys.argv[1])
 TEMPERATURE=float(sys.argv[2])
 
-data=np.loadtxt("./thermo.txt",dtype=float)[10000:]
+data=np.loadtxt("./thermo.txt",dtype=float)[1000:]
 Ek=np.loadtxt("./Ek_%i.txt"%NP,dtype=float)
 
 with open('Average_thermo_pps.txt','w') as fp:

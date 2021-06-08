@@ -17,7 +17,7 @@ def MaxBolDis(arr_Ek,f_temp):
 
     P=2[(1/kT)^(3/2)]*[(E/pi)^(1/2)]*exp(-E/kT)
     '''
-    beta=1000/(1.38*6.022*f_temp)
+    beta=1000/(1.38064852*6.02214076*f_temp)
     arr_P=np.zeros(arr_Ek.shape)
     for i,item in enumerate(arr_Ek):
         arr_P[i]=2*pow(beta,3/2)*np.sqrt(item/np.pi)*np.exp(-item*beta)
