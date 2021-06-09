@@ -25,7 +25,7 @@ variable        tns     equal ${dt}*1000000 # 1 ns=1e6 fs
 
 variable        stemp   equal 298.00
 variable        tdamp   equal 100*${dt}
-variable        teq     equal ${tns}*1
+variable        teq     equal 1000      # ${tns}*1
 variable        tdc     equal ${tns}*10
 variable        tpr     equal ${dt}*1000
 
@@ -33,22 +33,22 @@ variable        tpr     equal ${dt}*1000
 fix             eqCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp}
 neigh_modify    exclude group CH4 CH4
 
-#compute_modify  eqCH4_temp extra/dof 0 # dynamic/dof yes
+compute_modify  eqCH4_temp extra/dof 0 # dynamic/dof yes
 
 ## PART 1 ##
 compute         allTemp all temp
 compute         CH4Temp CH4 temp
 compute         framTemp fram temp
 compute         CH4ke CH4 ke
-# compute_modify  allTemp extra/dof 0 dynamic/dof yes
-# compute_modify  CH4Temp extra/dof 0 dynamic/dof yes
+compute_modify  allTemp extra/dof 0 dynamic/dof yes
+compute_modify  CH4Temp extra/dof 0 # dynamic/dof yes
 # compute_modify  framTemp extra/dof 0 dynamic/dof yes
 # compute_modify  CH4ke extra/dof  0 dynamic/dof yes
 
 ## PART 2 ##
 variable        CH4Xcm equal xcm(CH4,x)+xcm(CH4,y)+xcm(CH4,z)
 variable        CH4Vcm equal vcm(CH4,x)+vcm(CH4,y)+vcm(CH4,z)
-thermo_style    custom atoms step temp c_allTemp c_CH4Temp c_framTemp ke c_CH4ke f_eqCH4 # v_CH4Vcm v_CH4Xcm # pe etotal press vol
+thermo_style    custom atoms step temp c_allTemp c_CH4Temp c_framTemp ke c_CH4ke c_eqCH4_temp # v_CH4Vcm v_CH4Xcm # pe etotal press vol
 
 #### SIMULATION SETTINGS ####
 ## EQUILIBRIUM ##

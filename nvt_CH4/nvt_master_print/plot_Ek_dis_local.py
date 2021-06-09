@@ -42,7 +42,8 @@ def compute_Ek(int_np):
         arr_coords_arg=np.argsort(arr_coords[i*int_np:(i+1)*int_np,0])+i*int_np
         arr_coords[i*int_np:(i+1)*int_np]=arr_coords[arr_coords_arg]
     # compute kinetic energy
-    arr_Ek=np.sum((arr_coords*arr_coords)[:,2:5],axis=1)*16*10000/(2)
+    ## Ek=1/2*m*v^2=0.5*16.04*v*2 g/mol (A/fs)^2=0.5*16*v*2 *1000 kJ/mol
+    arr_Ek=np.sum((arr_coords*arr_coords)[:,2:5],axis=1)*16.04*10000/(2)
     np.savetxt('Ek_%i.txt'%int_np,arr_Ek)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
