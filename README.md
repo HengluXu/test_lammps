@@ -1,9 +1,5 @@
 # test lammps
 
-## to-do
-* print degree of freedom (DOF)
-* print degree of freedom (DOF)_constrained
-
 ## lammps branch
 Modified lammps source code [(repo link)](https://github.com/HengluXu/lammps.git)
 ``` bash
@@ -15,6 +11,7 @@ git branch -a
         # print different `dof`
     dof_pull        # --> for use
         # change `dof=3N`
+    dof_init
 mpirun -np 4 /path_to/lammps/src/lmp_${branch_name} -in in.*
 ```
 

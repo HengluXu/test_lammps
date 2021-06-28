@@ -1,0 +1,71 @@
+#### GENERAL SETTINGS ####
+units           real
+atom_style      full
+boundary        p p p
+
+#### ATOM SETTINGS ####
+pair_style      lj/cut 12.500
+bond_style      harmonic
+angle_style     hybrid fourier cosine/periodic
+dihedral_style  harmonic
+improper_style  fourier
+
+dielectric      1.0
+pair_modify     tail yes mix arithmetic
+special_bonds   lj/coul 0.0 0.0 1.0
+box tilt        large
+# #### LOAD STRUCTURES ####
+# read_data       data222.mIM_DFT
+# 
+# # Minimization
+# min_style cg
+# fix             2 all box/relax tri 0.0 vmax 0.01
+# minimize 1e-15 1e-15 100000  100000
+# unfix           2
+# run 0
+# write_data      Mini1.dat
+
+# Simulations settings
+variable         dt equal 1.0  # femtoseconds
+timestep         ${dt}
+variable         MyV equal vol
+fix Vave all ave/time  2 100000 200000 v_MyV file MyV.dat
+
+
+#NPT Equilibration (1ns)
+fix 1 all npt temp 10.0 300.0 $(100.0*dt) tri 0.0 0.0 $(1000.0*dt)
+#fix_modify     1 energy yes
+neighbor      1.0 bin
+neigh_modify   every 1 delay 10 check yes
+
+restart        300 Equi.restart
+thermo 100
+thermo_style custom step temp etotal pe ke vol press emol elong etail
+dump            relax all custom 100 relaxed.lammpstrj id type x y z
+run 2000
+write_data      EquiNPT1.data
+unfix 1
+unfix Vave
+
+#      ##NVT Equilibration
+#      fix 1 all nvt temp 300.0 300.0 $(100.0*dt)
+#      fix_modify     1 energy yes
+#      neighbor      1.0 bin
+#      neigh_modify   every 1 delay 10 check yes
+#
+#      thermo 10
+#      thermo_style custom step temp etotal pe ke vol press
+#      run 1000
+#      write_data      EquiNVT1.data
+#      unfix 1
+#      undump          Im_SOD_xyzmov
+#
+#      ##NVE Equilibration
+#      #fix             1 all nve
+#      #neighbor       1.0 bin
+#      #neigh_modify    every 1 delay 10 check yes
+#      #
+#      #thermo 10
+#      #thermo_style custom step temp etotal pe ke vol press
+#      #run 1000000
+#      #write_data      EquiNVE.data

@@ -5,6 +5,7 @@ log.*
 *.pdf
 *.txt
 *.png
+Equi.*
 
 # tmp dirs
 test_*

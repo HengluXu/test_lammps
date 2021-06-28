@@ -8,7 +8,7 @@ import numpy as np
 NP=int(sys.argv[1])
 TEMPERATURE=float(sys.argv[2])
 
-data=np.loadtxt("./thermo.txt",dtype=float)[1000:]
+data=np.loadtxt("./thermo.txt",dtype=float)[:]
 Ek=np.loadtxt("./Ek_%i.txt"%NP,dtype=float)
 
 with open('Average_thermo_pps.txt','w') as fp:
@@ -28,6 +28,6 @@ with open('Average_thermo_pps.txt','w') as fp:
     fp.write('\t framtemp   %.2f K\n'%(np.average(data[:,5])))
     fp.write('\t ke         %.2f kJ/mol\n'%(np.average(data[:,6])*4.184/NP))
     fp.write('\t CH4ke      %.2f kJ/mol\n'%(np.average(data[:,7])*4.184/NP))
-    fp.write('\t fixTemp    %.2f k\n'%(np.average(data[:,8])))
+#    fp.write('\t fixTemp    %.2f k\n'%(np.average(data[:,8])))
     fp.write('Average Ek calculated from CH4_velocities.dat\n')
     fp.write('\t ke         %.2f kJ/mol\n'%(np.average(Ek)))
