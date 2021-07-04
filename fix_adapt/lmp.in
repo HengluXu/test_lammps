@@ -1,0 +1,91 @@
+#### GENERAL SETTINGS ####
+log             log.lammps
+units real
+processors * * *
+newton off
+
+#### ATOM SETTINGS ####
+atom_style full
+atom_modify sort 0 10.0
+
+#### LOAD STRUCTURES ####
+#bond_style zero nocoeff
+read_data "lmp.data"
+#bond_coeff *
+#comm_modify cutoff 20.0
+
+#### ATOM GROUPINGS ####
+group GUEST type 1
+group MOF type 2 3 4 5 6 7 8 9 10
+
+#### COMPUTE SETTINGS ####
+compute comT all com
+compute comG GUEST com
+compute comM MOF com
+
+#### VARIABLE SETTINGS ####
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000 # 1 ns=1e6 fs
+
+variable        stemp   equal 313.00
+variable        etemp   equal 273.00
+variable        tdamp   equal 100*${dt}
+
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal ${tdc}/10000
+
+#### SIMULATION SETTINGS ####
+## RESET SIMULATION BOX ##
+change_box         all x delta $(-xlo) $(-xlo) y delta $(-ylo) $(-ylo) z delta $(-zlo) $(-zlo) remap units box
+write_data         data_changebox.data
+run                0
+
+#### FIX SETTINGS ####
+fix                nvtGUEST GUEST nvt temp ${stemp} ${stemp} ${tdamp}
+compute_modify     nvtGUEST_temp extra/dof 0
+
+thermo             ${tpr}       # 200
+thermo_style       custom step temp epair emol etotal c_comT[1] c_comT[2] c_comT[3] c_comG[1] c_comG[2] c_comG[3] c_comM[1] c_comM[2] c_comM[3]
+
+## GET RID OF OVERLAPPING ATOMS ##
+special_bonds      lj/coul 0.0 0.0 0.0
+pair_style         soft 3.0
+pair_coeff         * * 0.0 3.0
+kspace_style       none
+
+########################################################
+variable           prefactor equal ramp(0.1,0.2)
+fix                2 all adapt 1 pair soft a * * v_prefactor
+dump               trj1 all custom ${tpr} dump_overlap.lammpstrj id type x y z
+dump_modify        trj1 sort 2
+run                200
+########################################################
+unfix              2
+undump             trj1
+write_data         data_overlap.data
+
+#### MD RUN ####
+## same fix setup as nvtGUEST
+thermo_style       custom step temp c_nvtGUEST_temp epair evdwl ecoul elong etail emol pe ke etotal c_comT[1] c_comT[2] c_comT[3] c_comG[1] c_comG[2] c_comG[3] c_comM[1] c_comM[2] c_comM[3]
+## reset force field parameters
+#kspace_style       ewald 1.0e-6
+include "lmp.in.settings"
+
+## EQUILIBRIUM ##
+reset_timestep     0
+dump               trj2 all custom ${tpr} dump_nvt_eq.lammpstrj id type x y z
+dump_modify        trj2 sort 2
+
+fix                freezeMOF MOF setforce 0.0 0.0 0.0
+minimize           1.0e-5 1.0e-5 1000 1000
+#fix                3 GUEST rigid/nvt molecule temp 298.0 298.0 100.0
+#fix_modify         3 temp allTemp
+unfix              freezeMOF
+
+restart            100000 eq.restart     # 2000000 sim.restart
+run                ${teq} # 1000000
+
+write_data         data_nvt_eq.data
+
+## MD END ##
