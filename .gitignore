@@ -1,15 +1,16 @@
-# result files
+# data files
 log.*
 *.lammpstrj
 *.dat
 *.pdf
 *.txt
 *.png
-Equi.*
+Equi*
+data_*
+dump*
 
-# tmp dirs
+# test dirs
 test_*
 calc_*
 old_*
 mail_lists
-# nvt_CH4/nvt_*

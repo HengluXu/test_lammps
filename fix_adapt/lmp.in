@@ -59,7 +59,7 @@ variable           prefactor equal ramp(0.1,0.2)
 fix                2 all adapt 1 pair soft a * * v_prefactor
 dump               trj1 all custom ${tpr} dump_overlap.lammpstrj id type x y z
 dump_modify        trj1 sort 2
-run                200
+run                1000
 ########################################################
 unfix              2
 undump             trj1

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cpu=4
-input='1_*.in'
+input='lmp.in'
 
 export OMP_NUM_THREADS=${cpu}
 
