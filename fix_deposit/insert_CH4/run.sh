@@ -1,3 +1,8 @@
 #!/bin/bash 
 
-mpirun -np 4 ~/Research/lammps/src/lmp_master -in in.MFI
+cpu=4
+input='in.*'
+
+# export OMP_NUM_THREADS=${cpu}
+
+mpirun -np ${cpu} ~/Research/lammps/src/lmp_master -in ${input}

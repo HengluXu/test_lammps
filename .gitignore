@@ -10,7 +10,7 @@ data_*
 dump*
 
 # test dirs
-test_*
+test*
 calc_*
 old_*
 mail_lists

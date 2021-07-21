@@ -1,9 +1,9 @@
 # GCMC for LJ simple fluid, no dynamics
 # T = 2.0
-# rho ~ 0.5
-# p ~ 1.5
+# rho ~ 0.5         # density
+# p ~ 1.5           # pressure
 # mu_ex ~ 0.0
-# comparable to Frenkel and Smit GCMC Case Study, Figure 5.8 
+# comparable to Frenkel and Smit GCMC Case Study, Figure 5.8
 
 # variables modifiable using -var command line switch
 
@@ -16,7 +16,7 @@ variable        lbox index 5.0
 
 units           lj
 atom_style      atomic
-pair_style      lj/cut 3.0 
+pair_style      lj/cut 3.0
 pair_modify	tail no # turn of to avoid triggering full_energy
 
 # box
@@ -26,7 +26,7 @@ create_box	1 box
 
 # lj parameters
 
-pair_coeff	* * 1.0 1.0
+pair_coeff	* * 1.0 1.0          # unit lj
 mass		* 1.0
 
 # we recommend setting up a dedicated group for gcmc

@@ -12,6 +12,9 @@ tests of different lammps commands
     * ./plot_Ek_dis.py NP temperature
     * ./compute_log_thermo.py NP temperature
 
+## fix gcmc
+
+
 ## fix deposit
 ## fix adapt
 
