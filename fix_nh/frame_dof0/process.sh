@@ -9,7 +9,7 @@ echo -e "## Calculate Ek distribution and average Ek from lammps trajectory (CH4
 ./plot_Ek_dis_local.py ${NP} ${TEMPERATURE}
 
 echo -e "\n## Calculate average thermo properties from log.lammps (thermo commands)\n"
-grep -e '\s\+320\+\s\+[0-9]' log.lammps > thermo.txt
+grep -e '\s\+320\+\s\+[0-9]' log.test > thermo.txt
 ./compute_log_thermo.py ${NP} ${TEMPERATURE}
 
 echo -e "Results in Average_thermo_pps.txt"

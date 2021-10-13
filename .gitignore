@@ -8,9 +8,13 @@ log.*
 Equi*
 data_*
 dump*
+.ipynb*
+*.swp
+data.*
 
 # test dirs
 test*
 calc_*
 old_*
 mail_lists
+noframe_*
