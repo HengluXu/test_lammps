@@ -1,0 +1,69 @@
+log             log.nvt
+#### ENVIRONMENT SETTING ####
+## VARIABLE ##
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000 
+variable        rsd     equal 1316721
+
+variable        stemp   equal 298.00
+variable        tdamp   equal 100*${dt}
+
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal 1000 # ${tdc}/10000
+
+## GENERAL ##
+units           real
+boundary        p p p
+box             tilt large
+
+## INTERACTION ##
+atom_style      full
+pair_style      lj/cut 12.50
+pair_modify     tail yes mix arithmetic
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+
+## LOAD STRUCTURE ##
+read_data	 	data.nvt_init
+replicate       1 1 1
+group           guest     type    5
+group           frame     type    1:4
+#### ENVIRONMENT END ####
+
+#### SIMULATION SETTING ####
+## MD SETTING ##
+compute         GuestTemp guest temp
+compute_modify  GuestTemp extra/dof 0
+
+thermo_style    custom atoms step temp ke etotal press vol
+thermo_modify 	temp GuestTemp
+thermo          ${tpr}
+
+timestep 		${dt}
+fix             GuestNvt guest nvt temp ${stemp} ${stemp} ${tdamp}
+fix_modify      GuestNvt temp GuestTemp
+
+## EQUILIBRIUM ##
+dump 			InitFram frame custom ${tpr} init_fram.lammpstrj type id x y z
+dump_modify 	InitFram sort id
+dump 			InitAll  all   custom ${tpr} init_all.lammpstrj type id x y z
+dump_modify 	InitAll  sort id
+run 			0
+undump 			InitFram
+undump 			InitAll
+run             ${teq}
+
+## DATA COLLECTION ##
+reset_timestep 	0
+dump            NvtVelo guest custom ${tpr} nvt_velo.dat type id vx vy vz
+dump_modify 	NvtVelo sort id
+dump            NvtTraj guest custom ${tpr} nvt_traj.dat type id xs ys zs ix iy iz
+dump_modify 	NvtTraj sort id
+run             ${tdc}
+write_data 		data.nvt_end
+
+undump 			NvtVelo
+undump 			NvtTraj
+unfix 			GuestNvt
+#### SIMULATION END ####

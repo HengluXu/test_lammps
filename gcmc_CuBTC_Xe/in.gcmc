@@ -1,0 +1,63 @@
+log             log.gcmc
+#### ENVIRONMENT SETTING ####
+## VARIABLE ##
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000 
+variable        rsd     equal 1316721
+
+variable        stemp   equal 298.00
+variable        tdamp   equal 100*${dt}
+variable        spress  equal 10000000.0
+variable        smu 	equal 1.5
+variable        disp	equal 0.5
+
+variable        teq     equal 10 # ${tns}*1
+variable        tdc     equal 10 # ${tns}*10
+variable        tpr     equal 1  # 1000 # ${tdc}/10000
+
+## GENERAL ##
+units           real
+boundary        p p p
+box             tilt large
+
+## INTERACTION ##
+atom_style      full
+pair_style      lj/cut 12.50
+pair_modify     tail yes mix arithmetic
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+
+## LOAD STRUCTURE ##
+read_data       data.gcmc_init
+replicate       1 1 1
+group           guest     type    5
+group           frame     type    1:4
+group           block     type    8
+#### ENVIRONMENT END ####
+
+#### SIMULATION SETTING ####
+## MD SETTING ##
+compute         GuestTemp guest temp
+compute_modify  GuestTemp extra/dof 0
+
+thermo_style    custom atoms step temp ke etotal press vol
+thermo_modify 	temp GuestTemp
+thermo          ${tpr}
+
+## GCMC INSERTION ## 
+dump 			InitAll all custom ${tpr} init_gcmc.lammpstrj type id x y z
+dump_modify 	InitAll sort id
+run 			0
+undump 			InitAll
+
+timestep 		${dt}
+fix 			GcmcGuest guest gcmc 1 100 100 5 ${rsd} ${stemp} ${smu} ${disp} pressure ${spress} full_energy
+# fix_modify      GcmcGuest temp GuestTemp
+dump 			GcmcTraj all custom ${tpr} gcmc_traj.lammpstrj type id x y z
+dump_modify 	GcmcTraj sort id
+run 			2
+
+write_data 		data.gcmc_end
+undump 			GcmcTraj
+unfix 			GcmcGuest
+#### SIMULATION END ####

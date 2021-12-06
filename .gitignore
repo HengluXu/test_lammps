@@ -1,18 +1,22 @@
-# data files
+# DATA FILES
 log.*
 *.lammpstrj
-*.dat
-*.pdf
-*.txt
-*.png
-Equi*
-data_*
 dump*
+data*
+Eq*
+*.dat
+*.txt
+
+run_lammps.sh
+clean.sh
+
+*.pdf
+*.png
+
 .ipynb*
 *.swp
-data.*
 
-# test dirs
+# TEST DIRS
 test*
 calc_*
 old_*
