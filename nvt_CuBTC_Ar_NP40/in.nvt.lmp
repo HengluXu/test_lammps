@@ -2,10 +2,10 @@ log             log.nvt
 #### ENVIRONMENT SETTING ####
 ## VARIABLE ##
 variable        dt      equal 1.00
-variable        tns     equal ${dt}*1000000 
+variable        tns     equal ${dt}*1000000
 variable        rsd     equal 1316721
 
-variable        stemp   equal 298.00
+variable        stemp   equal 300.00
 variable        tdamp   equal 100*${dt}
 
 variable        teq     equal ${tns}*1
@@ -25,7 +25,7 @@ special_bonds   lj/coul 0.0 0.0 1.0
 dielectric      1.0
 
 ## LOAD STRUCTURE ##
-read_data	 	data.nvt_init
+read_data		data.nvt_init
 replicate       1 1 1
 group           guest     type    5
 group           frame     type    1:4
@@ -55,7 +55,7 @@ undump 			InitAll
 run             ${teq}
 
 ## DATA COLLECTION ##
-reset_timestep 	0
+reset_timestep	0
 dump            NvtVelo guest custom ${tpr} nvt_velo.dat type id vx vy vz
 dump_modify 	NvtVelo sort id
 dump            NvtTraj guest custom ${tpr} nvt_traj.dat type id xs ys zs ix iy iz

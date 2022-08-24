@@ -1,24 +1,27 @@
-# DATA FILES
+## bash srcs
+# run_lammps.sh
+# clean.sh
+*.sh
+
+## DATA FILES
 log.*
+*data*
+eq*
 *.lammpstrj
-dump*
-data*
-Eq*
-*.dat
 *.txt
+*.dat
 
-run_lammps.sh
-clean.sh
-
+## results and cache
 *.pdf
 *.png
-
-.ipynb*
 *.swp
+.ipynb*
 
-# TEST DIRS
-test*
-calc_*
+## test
+*test*
 old_*
-mail_lists
-noframe_*
+examples/
+
+## mush sync
+!in.*
+!*.in

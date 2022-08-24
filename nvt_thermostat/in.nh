@@ -32,8 +32,9 @@ variable        tdc     equal 1000000
 #### COMPUTE SETTINGS ####
 fix             nvtCH4 CH4 nvt temp ${stemp} ${stemp} ${tdamp} 
 compute         CH4Temp CH4 temp
-fix_modify      nvtCH4 temp CH4Temp
-compute_modify  CH4Temp extra/dof 0 # dynamic/dof yes
+# fix_modify      nvtCH4 temp CH4Temp
+# compute_modify  CH4Temp extra/dof 0 # dynamic/dof yes
+fix 			1 CH4 momentum 1 linear 1 1 1 
 
 variable        CH4Xcm equal xcm(CH4,x)+xcm(CH4,y)+xcm(CH4,z)
 variable        CH4Vcm equal vcm(CH4,x)+vcm(CH4,y)+vcm(CH4,z)
