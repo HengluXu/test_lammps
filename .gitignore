@@ -21,10 +21,6 @@ eq*
 *test*
 old_*
 examples/
-<<<<<<< HEAD
-tmp_*
-=======
->>>>>>> a307c2a7b1e342ad11694046bc99fb3ec2b4b6cd
 
 ## mush sync
 !in.*
