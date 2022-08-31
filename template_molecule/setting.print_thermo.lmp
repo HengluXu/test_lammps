@@ -1,0 +1,5 @@
+fix log_thermo all print ${tpr} "$(step) $(temp) $(press) $(vol) $(ke) $(pe) $(etotal) $(enthalpy)" & 
+    file print_thermo.dat screen no title "## 10 step temp press vol ke pe etotal enthalpy ecouple econserve"
+# fix log_epair  all print ${tpr} "$(evdwl) $(etail) $(ecoul) $(elong) $(epair)" file print_epair.dat  screen no title "## 5 evdwl etail ecoul elong epair "
+# fix log_emole  all print ${tpr} "$(ebond) $(eangle) $(edihed) $(eimp) $(emol) $(epair) " &
+# 	file print_emole.dat  screen no title "## 6 ebond eangle edihe eimp emol epair"

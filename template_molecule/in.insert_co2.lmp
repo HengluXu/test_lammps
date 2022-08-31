@@ -1,0 +1,116 @@
+log             log.insert
+#### ENVIRONMENT SETTING ####
+## VARIABLE ##
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000
+variable        rsd     equal 189785
+
+variable        stemp   equal 300.00
+variable        tdamp   equal 100*${dt}
+variable        nmol    equal 100
+
+variable        typeA   equal 5         ## atomtype
+variable        typeC   equal ${typeA}+1
+variable        typeO   equal ${typeA}+2
+
+variable        tin     equal 100000    ## 5 attemps
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal 1000
+
+## GENERAL ##
+units           real
+boundary        p p p
+box             tilt large
+
+## INTERACTION ##
+atom_style      full
+pair_style      lj/cut/coul/long 12.5
+pair_modify     tail yes mix arithmetic
+bond_style      harmonic            ## CO2 only
+angle_style     harmonic            ## CO2 only
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+kspace_style    ewald 1e-6
+
+## LOAD STRUCTURE ##
+read_data       data.rigid &
+                extra/bond/per/atom 2       &
+                extra/angle/per/atom 1      &
+                extra/special/per/atom 2    ## leave enough molecule/topology space
+bond_coeff      1      0 1.16
+angle_coeff     1      0 180
+
+group           frame 	type    1:${typeA}
+group           guest	type    ${typeC} ${typeO}
+neighbor        2.0 bin
+neigh_modify    exclude molecule/inter guest &
+                every 1 delay 10 check yes
+#### ENVIRONMENT END ####
+
+#### SIMULATION SETTING ####
+## INSERTION ##
+molecule        CO2 CO2.molecule
+region          cell block 0 EDGE 0 EDGE 0 EDGE units lattice
+thermo_style    custom atoms step temp
+thermo          100
+
+fix             1 guest rigid/small molecule mol CO2
+fix_modify      1 dynamic/dof yes
+fix             2 guest langevin 0.00 0.00 ${tdamp} ${rsd}
+fix             3 guest nve
+fix             4 guest deposit ${nmol} ${typeA} 100 ${rsd} region cell mol CO2 rigid 1 &
+                        vx -1e-3 1e-3 vy -1e-3 1e-3 vz -1e-3 1e-3 near 2.00
+run             ${tin}
+write_data		data.end_insert
+unfix           1
+unfix           2
+unfix           3
+unfix           4
+
+## MD SETTING ##
+group           guest type 6 7
+compute         GuestTemp guest temp
+compute_modify  GuestTemp extra/dof 0 # dynamic/dof yes
+
+thermo_style    custom atoms step temp ke etotal press vol
+thermo_modify 	temp GuestTemp
+thermo          ${tpr}
+
+## EQUILIBRIUM ##
+timestep 		${dt}
+velocity 		guest create ${stemp} ${rsd}
+fix             GuestNvt guest rigid/nvt/small molecule temp ${stemp} ${stemp} ${tdamp} mol CO2
+fix_modify      GuestNvt temp GuestTemp
+run             1000
+velocity 		guest create ${stemp} 2179
+run             1000
+
+reset_timestep  0
+# include         setting.print_thermo.lmp
+dump            eq_velo guest custom ${tpr} eq_velo.dat type id vx vy vz
+dump            eq_traj guest custom ${tpr} eq_traj.dat type id x y z ix iy iz
+dump_modify     eq_velo sort id
+dump_modify     eq_traj sort id
+run             ${teq}
+write_data		data.end_eq
+undump 			eq_velo
+undump 			eq_traj
+
+## DATA COLLECTION ##
+reset_timestep  0
+include         setting.print_thermo.lmp
+dump            nvt_velo guest custom ${tpr} nvt_velo.dat type id vx vy vz
+dump            nvt_traj guest custom ${tpr} nvt_traj.dat type id x y z ix iy iz
+dump_modify     nvt_velo sort id
+dump_modify     nvt_traj sort id
+run             ${tdc}
+write_data		data.nvt_end
+undump 			nvt_velo
+undump 			nvt_traj
+
+dump            eq_fin all custom 100 final.lammpstrj type id x y z
+dump_modify     eq_fin sort id
+run             0
+undump          eq_fin
+#### SIMULATION END ####

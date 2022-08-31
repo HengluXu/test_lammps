@@ -21,6 +21,7 @@ eq*
 *test*
 old_*
 examples/
+tmp_*
 
 ## mush sync
 !in.*

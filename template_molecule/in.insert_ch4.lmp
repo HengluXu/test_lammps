@@ -1,0 +1,81 @@
+log             log.insert
+#### ENVIRONMENT SETTING ####
+## VARIABLE ##
+package         gpu 1 neigh no
+variable        dt      equal 1.00
+variable        tns     equal ${dt}*1000000
+variable        rsd     equal 1316721
+
+variable        stemp   equal 300.00
+variable        tdamp   equal 100*${dt}
+variable        nmol    equal 160
+
+variable        teq     equal ${tns}*1
+variable        tdc     equal ${tns}*10
+variable        tpr     equal 100 # ${tdc}/10000
+
+## GENERAL ##
+units           real
+boundary        p p p
+box             tilt large
+
+## INTERACTION ##
+atom_style      full
+pair_style      lj/cut 12.50
+pair_modify     tail yes mix arithmetic
+special_bonds   lj/coul 0.0 0.0 1.0
+dielectric      1.0
+
+## LOAD STRUCTURE ##
+read_data       data.rigid
+replicate       1 1 1
+group           guest     type    6
+group           frame     type    1:5
+neigh_modify    exclude group guest guest
+#### ENVIRONMENT END ####
+
+#### SIMULATION SETTING ####
+## INSERT CH4 ##
+molecule        CH4 CH4.molecule
+region          cell block 0 EDGE 0 EDGE 0 EDGE units lattice
+# fix             1 CH4 rigid/small molecule langevin ${stemp} ${stemp} ${tdamp} ${rsd} mol CH4
+fix             2 guest langevin 0.00 0.00 ${tdamp} ${rsd}
+fix             3 guest nve
+fix             4 guest deposit ${nmol} 0 100 ${rsd} region cell near 2.00 mol CH4 # rigid 1
+thermo_style    custom atoms step temp
+thermo          500
+variable 		tmp equal floor(${nmol}*600)
+run             ${tmp}
+write_data		data.end_insert
+# unfix           1
+unfix           2
+unfix           3
+unfix           4
+
+## MD SETTING ##
+compute         GuestTemp guest temp
+compute_modify  GuestTemp extra/dof 0
+
+thermo_style    custom atoms step temp ke etotal press vol
+thermo_modify 	temp GuestTemp
+thermo          ${tpr}
+
+timestep 		${dt}
+fix             GuestNvt guest nvt temp ${stemp} ${stemp} ${tdamp}
+fix_modify      GuestNvt temp GuestTemp
+
+## EQUILIBRIUM ##
+velocity 		guest create ${stemp} 217989
+run             1000
+
+reset_timestep  0
+dump            eq_velo guest custom ${tpr} eq_velo.dat type id vx vy vz
+dump            eq_trj2 guest custom ${tpr} eq_traj.dat type id x y z ix iy iz
+dump_modify 	eq_trj2 sort id
+velocity 		guest create ${stemp} ${rsd}
+run             ${teq}
+write_data		data.end_eq
+
+undump 			eq_velo
+undump 			eq_trj2
+#### SIMULATION END ####
